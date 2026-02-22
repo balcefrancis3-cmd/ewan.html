@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@700&family=Dancing+Script:wght@600&family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-pink: #ffe6ea; 
+            --curtain-pink: #ffc2cd;
+            --curtain-shadow: #e0a3ad;
+            --paper-cream: #fdfbf7;
+            --text-dark: #1a1a1a;
+            --accent-red: #c25e5e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-pink);
+            background-image: radial-gradient(#e0bcc3 1px, transparent 1px);
+            background-size: 20px 20px; 
+            font-family: 'Lato', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; 
+            position: relative;
+        }
+
+        /* --- CURTAIN --- */
+        #curtain-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: flex;
+            transition: pointer-events 0s linear 1.5s; 
+        }
+
+        .curtain-panel {
+            width: 50%;
+            height: 100%;
+            background-color: var(--curtain-pink);
+            background-image: repeating-linear-gradient(90deg, var(--curtain-pink), var(--curtain-pink) 40px, var(--curtain-shadow) 80px);
+            position: relative;
+            z-index: 2;
+            transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .curtain-left { transform-origin: left; border-right: 2px solid rgba(0,0,0,0.1); }
+        .curtain-right { transform-origin: right; border-left: 2px solid rgba(0,0,0,0.1); }
+
+        .curtain-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            text-align: center;
+            transition: opacity 0.5s ease;
+        }
+
+        #openBtn {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            font-family: 'Dancing Script', cursive;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            animation: heartbeat 1.5s infinite;
+        }
+
+        .curtain-open .curtain-left { transform: translateX(-100%); }
+        .curtain-open .curtain-right { transform: translateX(100%); }
+        .curtain-open .curtain-content { opacity: 0; pointer-events: none; }
+        .curtain-open { pointer-events: none !important; }
+
+        /* --- FLOWERS --- */
+        .flower {
+            position: absolute;
+            color: #d67a7a;
+            font-size: 24px;
+            z-index: 25;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1));
+        }
+        .f-top-left { top: -15px; left: -15px; transform: rotate(-45deg); font-size: 2.5rem; }
+        .f-top-right { top: -15px; right: -15px; transform: rotate(45deg); font-size: 2.5rem; }
+        .f-bottom-left { bottom: -15px; left: -15px; transform: rotate(-135deg); font-size: 2.5rem; }
+        .f-bottom-right { bottom: -15px; right: -15px; transform: rotate(135deg); font-size: 2.5rem; }
+        .curtain-flower { position: absolute; color: rgba(255, 255, 255, 0.4); font-size: 4rem; }
+
+        /* --- PHOTO STRIPS --- */
+        .photo-strip {
+            position: absolute;
+            width: max-content;
+            display: flex;
+            gap: 30px;
+            padding: 20px;
+            z-index: 2;
+            pointer-events: none; 
+            opacity: 0; 
+            transition: opacity 0.5s ease 0.5s; 
+        }
+
+        .top { top: 10px; left: -150%; }
+        .bottom { bottom: 10px; left: 100%; }
+
+        .start-anim .top { opacity: 1; animation: scrollRight 45s linear infinite; }
+        .start-anim .bottom { opacity: 1; animation: scrollLeft 45s linear infinite; }
+
+        @keyframes scrollRight {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(250%); } 
+        }
+
+        @keyframes scrollLeft {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-250%); } 
+        }
+
+        /* --- FRAMES --- */
+        .frame {
+            width: 180px;
+            height: 220px;
+            background-color: white;
+            padding: 10px 10px 45px 10px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .frame:nth-child(odd) { transform: rotate(2deg); }
+        .frame:nth-child(even) { transform: rotate(-2deg); }
+        .frame:hover { transform: scale(1.1) rotate(0deg) !important; box-shadow: 0 15px 30px rgba(194, 94, 94, 0.3); z-index: 10; }
+        .frame img { width: 100%; height: 100%; object-fit: cover; border: 1px solid #eee; }
+
+        /* --- SIDE DECOR --- */
+        .side-frame { position: absolute; top: 50%; transform: translateY(-50%); z-index: 5; }
+        .side-frame.left { left: 5%; transform: translateY(-50%) rotate(-5deg); }
+        .side-frame.right { right: 5%; transform: translateY(-50%) rotate(5deg); }
+        .tape { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 80px; height: 25px; background-color: rgba(189, 149, 149, 0.6); z-index: 10; }
+
+        /* --- CENTER CARD --- */
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--paper-cream);
+            width: 400px;
+            padding: 60px 40px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            z-index: 20;
+            background-image: linear-gradient(to bottom right, #fdfbf7, #f7f3eb);
+            border: 1px solid #efe8e8;
+        }
+
+        .container::before { content: ''; position: absolute; top: -15px; left: 50%; transform: translateX(-50%) rotate(-1deg); width: 140px; height: 40px; background-color: rgba(168, 159, 145, 0.7); box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 26; }
+        .stamp { position: absolute; bottom: 20px; right: 20px; border: 2px solid var(--accent-red); color: var(--accent-red); font-family: 'Courier New', monospace; font-weight: bold; padding: 5px 8px; transform: rotate(-15deg); opacity: 0.6; font-size: 0.8rem; letter-spacing: 1px; }
+
+        h1 { font-family: 'Bodoni Moda', serif; color: #2c1a1a; font-size: 2.2rem; margin-bottom: 40px; line-height: 1.2; }
+        h1 span { font-family: 'Dancing Script', cursive; color: var(--accent-red); font-size: 3rem; display: block; margin-top: 10px; }
+
+        button.action-btn { font-family: 'Playfair Display', serif; font-weight: bold; font-size: 18px; padding: 12px 40px; margin: 10px; border: none; border-radius: 5px; cursor: pointer; transition: all 0.3s ease; position: relative; }
+        
+        #yesBtn { 
+            background-color: var(--accent-red); 
+            color: var(--paper-cream); 
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+            /* Smooth scaling transition */
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+        
+        #yesBtn:hover { transform: translateY(-2px); box-shadow: 4px 6px 10px rgba(194, 94, 94, 0.4); background-color: #d16d6d; }
+        
+        /* NO BUTTON STYLES */
+        #noBtn {
+            background-color: #e0e0e0;
+            color: #666;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.05);
+            transition: left 0.3s ease, top 0.3s ease; 
+            z-index: 9999;
+        }
+
+        .bg-icon { position: absolute; color: rgba(194, 94, 94, 0.15); z-index: 1; }
+        .icon-1 { top: 10%; left: 10%; font-size: 4rem; transform: rotate(-20deg); }
+        .icon-2 { bottom: 10%; right: 10%; font-size: 5rem; transform: rotate(20deg); }
+
+        @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.1); } 30% { transform: scale(1); } 45% { transform: scale(1.1); } 60% { transform: scale(1); } 100% { transform: scale(1); } }
+
+        @media (max-width: 600px) {
+            .side-frame { display: none; }
+            .frame { width: 120px; height: 150px; }
+            .container { width: 90%; padding: 40px 20px; }
+            h1 { font-size: 1.8rem; }
+            h1 span { font-size: 2.5rem; }
+            .flower { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body id="main-body">
+
+    <div id="curtain-container">
+        <div class="curtain-panel curtain-left">
+            <i class="fa-solid fa-seedling curtain-flower" style="top: 20%; left: 20%;"></i>
+            <i class="fa-solid fa-heart curtain-flower" style="bottom: 30%; right: 20%; font-size: 2rem;"></i>
+        </div>
+        <div class="curtain-panel curtain-right">
+            <i class="fa-solid fa-seedling curtain-flower" style="bottom: 20%; right: 20%;"></i>
+            <i class="fa-solid fa-heart curtain-flower" style="top: 30%; left: 20%; font-size: 2rem;"></i>
+        </div>
+        
+        <div class="curtain-content">
+            <button id="openBtn" onclick="openCurtain()">
+                For You <i class="fa-solid fa-envelope-open-text"></i>
+            </button>
+        </div>
+    </div>
+
+    <i class="fa-solid fa-heart bg-icon icon-1"></i>
+    <i class="fa-solid fa-fan bg-icon icon-2"></i>
+
+    <div class="photo-strip top">
+        <div class="frame"><img src="Olicis1.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis2.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis3.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis4.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis12.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis6.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis7.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis8.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis1.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis2.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis3.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis4.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis12.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis6.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis7.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis8.jpg" alt="Memory"></div>
+    </div>
+
+    <div class="side-frame left">
+        <div class="tape"></div>
+        <div class="frame"><img src="nailong2.jpg" alt="Cute"></div>
+    </div>
+
+    <div class="container">
+        <i class="fa-solid fa-spa flower f-top-left"></i>
+        <i class="fa-solid fa-spa flower f-top-right"></i>
+        <i class="fa-solid fa-spa flower f-bottom-left"></i>
+        <i class="fa-solid fa-spa flower f-bottom-right"></i>
+
+        <div class="stamp">WITH LOVE</div>
+        <h1>Will you be my <br><span>Valentine?</span></h1>
+        
+        <a href="YES.HTML" style="text-decoration: none;">
+            <button id="yesBtn" class="action-btn" onclick="sayYes()">Yes <i class="fa-solid fa-heart"></i></button>
+        </a>
+        
+        <button id="noBtn" class="action-btn" onmouseover="moveNo()" ontouchstart="moveNo()">No</button>
+    </div>
+
+    <div class="side-frame right">
+        <div class="tape"></div>
+        <div class="frame"><img src="nailong1.jpg" alt="Cute"></div>
+    </div>
+
+    <div class="photo-strip bottom">
+        <div class="frame"><img src="Olicis9.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis11.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis17.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis14.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis13.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis10.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis15.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis16.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis9.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis11.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis17.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis14.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis13.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis10.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis15.jpg" alt="Memory"></div>
+        <div class="frame"><img src="Olicis16.jpg" alt="Memory"></div>
+    </div>
+
+    <script>
+        // VARIABLE TO TRACK YES BUTTON SIZE
+        let yesScale = 1;
+
+        function openCurtain() {
+            document.getElementById('curtain-container').classList.add('curtain-open');
+            document.body.classList.add('start-anim');
+        }
+
+        function sayYes() {
+            // Optional: Alert or confetti
+        }
+
+        function moveNo() {
+            // 1. GROW YES BUTTON
+            yesScale += 0.2; // Increase size by 20%
+            const yesBtn = document.getElementById("yesBtn");
+            yesBtn.style.transform = `scale(${yesScale})`;
+
+            // 2. MOVE NO BUTTON
+            const btn = document.getElementById("noBtn");
+            const buffer = 50; 
+            
+            // Force fixed positioning on first hover
+            if (btn.parentNode !== document.body) {
+                const rect = btn.getBoundingClientRect();
+                document.body.appendChild(btn);
+                btn.style.position = 'fixed';
+                btn.style.left = rect.left + 'px';
+                btn.style.top = rect.top + 'px';
+            }
+
+            const windowWidth = document.documentElement.clientWidth;
+            const windowHeight = document.documentElement.clientHeight;
+            const btnWidth = btn.offsetWidth;
+            const btnHeight = btn.offsetHeight;
+
+            const maxX = windowWidth - btnWidth - buffer;
+            const maxY = windowHeight - btnHeight - buffer;
+
+            const randomX = Math.max(buffer, Math.random() * maxX);
+            const randomY = Math.max(buffer, Math.random() * maxY);
+
+            btn.style.left = randomX + "px";
+            btn.style.top = randomY + "px";
+        }
+    </script>
+
+</body>
+</html>
